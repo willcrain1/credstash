@@ -670,8 +670,8 @@ def get_parser():
                                   "or if that is not set, the value in "
                                   "`~/.aws/config`. As a last resort, "
                                   "it will use " + DEFAULT_REGION)
-    parsers['super'].add_argument("-R", "--resource", default="dynamodb",
-                                  help="the AWS resource to store or pull stored"
+    parsers['super'].add_argument("-d", "--datastore", default="dynamodb",
+                                  help="the location to store or pull stored"
                                   " credentials from.  Currently supported - dynamodb."
                                   " If not set, will default to dynamodb")
     parsers['super'].add_argument("-t", "--table", default="credential-store",
@@ -796,8 +796,9 @@ def main():
 
     try:
         region = args.region
+        resource = args.datastore
         session = get_session(**session_params)
-        session.resource('dynamodb', region_name=region)
+        session.resource(resource, region_name=region)
     except botocore.exceptions.NoRegionError:
         if 'AWS_DEFAULT_REGION' not in os.environ:
             region = DEFAULT_REGION
