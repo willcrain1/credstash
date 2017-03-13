@@ -805,29 +805,44 @@ def main():
 
     if "action" in vars(args):
         if args.action == "delete":
-            deleteSecrets(args.credential,
+            if datastore == "dynamodb":
+                deleteSecrets(args.credential,
                           region=region,
                           table=args.table,
                           **session_params)
+            else:
+                print("not a supported datastore")
             return
         if args.action == "list":
             if datastore == "dynamodb":
                 list_credentials(region, args, **session_params)
             else:
-                print "not a supported datastore"
+                print("not a supported datastore")
             return
         if args.action == "put":
-            putSecretAction(args, region, **session_params)
+            if datastore == "dynamodb":
+                putSecretAction(args, region, **session_params)
+            else:
+                print("not a supported datastore")
             return
         if args.action == "get":
-            getSecretAction(args, region, **session_params)
+            if datastore == "dynamodb":
+                getSecretAction(args, region, **session_params)
+            else:
+                print("not a supported datastore")
             return
         if args.action == "getall":
-            getAllAction(args, region, **session_params)
+            if datastore == "dynamodb":
+                getAllAction(args, region, **session_params)
+            else:
+                print("not a supported datastore")
             return
         if args.action == "setup":
-            createDdbTable(region=region, table=args.table,
-                           **session_params)
+            if datastore == "dynamodb":
+                createDdbTable(region=region, table=args.table,
+                                **session_params)
+            else:
+                print("not a supported datastore")
             return
     else:
         parsers['super'].print_help()
