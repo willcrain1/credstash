@@ -673,7 +673,7 @@ def get_parser():
     parsers['super'].add_argument("-R", "--resource", default="dynamodb",
                                   help="the AWS resource to store or pull stored"
                                   " credentials from.  Currently supported - dynamodb."
-                                  " If not set, will default to dynamodb.")
+                                  " If not set, will default to dynamodb")
     parsers['super'].add_argument("-t", "--table", default="credential-store",
                                   help="DynamoDB table to use for "
                                   "credential storage")
@@ -796,9 +796,8 @@ def main():
 
     try:
         region = args.region
-        resource = args.resource
         session = get_session(**session_params)
-        session.resource(resource, region_name=region)
+        session.resource('dynamodb', region_name=region)
     except botocore.exceptions.NoRegionError:
         if 'AWS_DEFAULT_REGION' not in os.environ:
             region = DEFAULT_REGION
