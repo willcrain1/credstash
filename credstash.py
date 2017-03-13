@@ -811,38 +811,38 @@ def main():
                           table=args.table,
                           **session_params)
             else:
-                print("not a supported datastore")
+                print(datastore + " is not a supported datastore")
             return
         if args.action == "list":
             if datastore == "dynamodb":
                 list_credentials(region, args, **session_params)
             else:
-                print("not a supported datastore")
+                print(datastore + " is not a supported datastore")
             return
         if args.action == "put":
             if datastore == "dynamodb":
                 putSecretAction(args, region, **session_params)
             else:
-                print("not a supported datastore")
+                print(datastore + " is not a supported datastore")
             return
         if args.action == "get":
             if datastore == "dynamodb":
                 getSecretAction(args, region, **session_params)
             else:
-                print("not a supported datastore")
+                print(datastore + " is not a supported datastore")
             return
         if args.action == "getall":
             if datastore == "dynamodb":
                 getAllAction(args, region, **session_params)
             else:
-                print("not a supported datastore")
+                print(datastore + " is not a supported datastore")
             return
         if args.action == "setup":
             if datastore == "dynamodb":
                 createDdbTable(region=region, table=args.table,
                                 **session_params)
             else:
-                print("not a supported datastore")
+                print(datastore + " is not a supported datastore")
             return
     else:
         parsers['super'].print_help()
