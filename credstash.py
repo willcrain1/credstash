@@ -674,9 +674,14 @@ def get_parser():
                                   help="the location to store or pull stored"
                                   " credentials from.  Currently supported - dynamodb."
                                   " If not set, will default to dynamodb")
+    parsers['super'].add_argument("-b", "--bucket",
+                                  help="the s3 bucket path of where to interact with"
+                                  " stored and storing credentials.  Note:  "
+                                  "only used with --datastore s3")
     parsers['super'].add_argument("-t", "--table", default="credential-store",
                                   help="DynamoDB table to use for "
-                                  "credential storage")
+                                  "credential storage.  Note: only used"
+                                  " with --datastore dynamodb")
     role_parse = parsers['super'].add_mutually_exclusive_group()
     role_parse.add_argument("-p", "--profile", default=None,
                             help="Boto config profile to use when "
@@ -810,30 +815,40 @@ def main():
                           region=region,
                           table=args.table,
                           **session_params)
+            elif datastore == "s3":
+                #TODO: create delete function for s3 secrets
             else:
                 print(datastore + " is not a supported datastore")
             return
         if args.action == "list":
             if datastore == "dynamodb":
                 list_credentials(region, args, **session_params)
+            elif datastore == "s3":
+                #TODO: create list function for s3 secrets
             else:
                 print(datastore + " is not a supported datastore")
             return
         if args.action == "put":
             if datastore == "dynamodb":
                 putSecretAction(args, region, **session_params)
+            elif datastore == "s3":
+                #TODO: create put function for s3 secrets
             else:
                 print(datastore + " is not a supported datastore")
             return
         if args.action == "get":
             if datastore == "dynamodb":
                 getSecretAction(args, region, **session_params)
+            elif datastore == "s3":
+                #TODO: create get function for s3 secrets
             else:
                 print(datastore + " is not a supported datastore")
             return
         if args.action == "getall":
             if datastore == "dynamodb":
                 getAllAction(args, region, **session_params)
+            elif datastore == "s3":
+                #TODO: create getall function for s3 secrets
             else:
                 print(datastore + " is not a supported datastore")
             return
@@ -841,6 +856,8 @@ def main():
             if datastore == "dynamodb":
                 createDdbTable(region=region, table=args.table,
                                 **session_params)
+            elif datastore == "s3":
+                #TODO: create setup function for s3 secrets
             else:
                 print(datastore + " is not a supported datastore")
             return
