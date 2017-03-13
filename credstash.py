@@ -216,7 +216,7 @@ def getHighestVersion(name, region=None, table="credential-store",
     '''
     session = get_session(**kwargs)
 
-    dynamodb = session.resource(datastore, region_name=region)
+    dynamodb = session.resource('dynamodb', region_name=region)
     secrets = dynamodb.Table(table)
 
     response = secrets.query(Limit=1,
@@ -254,7 +254,7 @@ def listSecrets(region=None, table="credential-store", **kwargs):
     '''
     session = get_session(**kwargs)
 
-    dynamodb = session.resource(datastore, region_name=region)
+    dynamodb = session.resource('dynamodb', region_name=region)
     secrets = dynamodb.Table(table)
 
     response = secrets.scan(ProjectionExpression="#N, version",
@@ -280,7 +280,7 @@ def putSecret(name, secret, version="", kms_key="alias/credstash",
         digest_method=digest,
     )
 
-    dynamodb = session.resource(datastore, region_name=region)
+    dynamodb = session.resource('dynamodb', region_name=region)
     secrets = dynamodb.Table(table)
 
     data = {
@@ -300,7 +300,7 @@ def getAllSecrets(version="", region=None, table="credential-store",
     output = {}
     if session is None:
         session = get_session(**kwargs)
-    dynamodb = session.resource(datastore, region_name=region)
+    dynamodb = session.resource('dynamodb', region_name=region)
     kms = session.client('kms', region_name=region)
     secrets = listSecrets(region, table, **kwargs)
 
@@ -433,7 +433,7 @@ def getSecret(name, version="", region=None,
     if dynamodb is None or kms is None:
         session = get_session(**kwargs)
         if dynamodb is None:
-            dynamodb = session.resource(datastore, region_name=region)
+            dynamodb = session.resource('dynamodb', region_name=region)
         if kms is None:
             kms = session.client('kms', region_name=region)
 
@@ -464,7 +464,7 @@ def getSecret(name, version="", region=None,
 def deleteSecrets(name, region=None, table="credential-store",
                   **kwargs):
     session = get_session(**kwargs)
-    dynamodb = session.resource(datastore, region_name=region)
+    dynamodb = session.resource('dynamodb', region_name=region)
     secrets = dynamodb.Table(table)
 
     response = secrets.scan(FilterExpression=boto3.dynamodb.conditions.Attr("name").eq(name),
@@ -796,9 +796,9 @@ def main():
 
     try:
         region = args.region
-        resource = args.datastore
+        datastore = args.datastore
         session = get_session(**session_params)
-        session.resource(resource, region_name=region)
+        session.resource('dynamodb', region_name=region)
     except botocore.exceptions.NoRegionError:
         if 'AWS_DEFAULT_REGION' not in os.environ:
             region = DEFAULT_REGION
@@ -811,7 +811,10 @@ def main():
                           **session_params)
             return
         if args.action == "list":
-            list_credentials(region, args, **session_params)
+            if datastore == "dynamodb":
+                list_credentials(region, args, **session_params)
+            else:
+                print "not a supported datastore"
             return
         if args.action == "put":
             putSecretAction(args, region, **session_params)
