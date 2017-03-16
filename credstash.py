@@ -234,15 +234,12 @@ def get_parser():
                                   "or if that is not set, the value in "
                                   "`~/.aws/config`. As a last resort, "
                                   "it will use " + DEFAULT_REGION)
-    parsers['super'].add_argument("-d", "--datastore", default="dynamodb",
-                                  help="the location to store or pull stored"
-                                  " credentials from.  Currently supported - dynamodb."
-                                  " If not set, will default to dynamodb")
-    parsers['super'].add_argument("-b", "--bucket",
+    datastore_parse = parsers['super'].add_mutually_exclusive_group()
+    datastore_parse.add_argument("-b", "--bucket",
                                   help="the s3 bucket path of where to interact with"
                                   " stored and storing credentials.  Note:  "
                                   "only used with --datastore s3")
-    parsers['super'].add_argument("-t", "--table", default="credential-store",
+    datastore_parse.add_argument("-t", "--table", default="credential-store",
                                   help="DynamoDB table to use for "
                                   "credential storage.  Note: only used"
                                   " with --datastore dynamodb")
