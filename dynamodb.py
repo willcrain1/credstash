@@ -4,7 +4,6 @@ import csv
 import json
 import operator
 import sys
-import re
 import boto3
 import botocore.exceptions
 
