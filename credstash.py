@@ -215,6 +215,10 @@ def get_parser():
                                   help="DynamoDB table to use for "
                                   "credential storage.  Note: only used"
                                   " with --datastore dynamodb")
+    datastore_subparsers = datastore_parse.add_subparsers(help="-b option requires "
+                                  "entering s3 credstash name")
+    s3_credstash_parser = datastore_subparsers.add_parser('s3credstash',help="name of the "
+                                  "credstash file name to work with in the s3 bucket")
     role_parse = parsers['super'].add_mutually_exclusive_group()
     role_parse.add_argument("-p", "--profile", default=None,
                             help="Boto config profile to use when "
@@ -397,7 +401,7 @@ def main():
                                 **session_params)
             elif datastore == "s3":
                 createS3Credstash(region=region, bucket=args.bucket,
-                                **session_params)
+                                **session_params,s3credstash)
             else:
                 print(datastore + " is not a supported datastore")
             return
