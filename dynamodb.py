@@ -8,11 +8,6 @@ import boto3
 import botocore.exceptions
 
 try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-try:
     import yaml
     NO_YAML = False
 except ImportError:
