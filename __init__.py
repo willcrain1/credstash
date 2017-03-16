@@ -1,1 +1,1 @@
-__all__ = ['credstash','dynamodb']
+from credstash import credstash, dynamodb
