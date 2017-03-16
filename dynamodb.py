@@ -1,6 +1,5 @@
 from utils import *
 
-import argparse
 import codecs
 import csv
 import json
