@@ -401,7 +401,7 @@ def main():
                                 **session_params)
             elif datastore == "s3":
                 createS3Credstash(region=region, bucket=args.bucket,
-                                **session_params,s3credstash)
+                                **session_params, s3credstash)
             else:
                 print(datastore + " is not a supported datastore")
             return
