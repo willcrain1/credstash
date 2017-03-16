@@ -362,10 +362,12 @@ def main():
 
     try:
         region = args.region
-        if args.bucket != ""
+        if args.bucket != "":
           datastore = "s3"
-        elif args.table != ""
+        elif args.table != "":
           datastore = "dynamodb"
+        else:
+          datastore = "select bucket to use s3 or table to use dynamodb"
         
         session = get_session(**session_params)
         session.resource('dynamodb', region_name=region)
