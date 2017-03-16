@@ -321,13 +321,9 @@ def get_parser():
     action = 'setup'
     parsers[action] = subparsers.add_parser(action,
                                             help='setup the credential store')
-    subparsers = parsers['super'].add_subparsers(help="-b option requires "
-                                  "entering s3 credstash name")
-    s3_credstash_parser = subparsers.add_parser('s3credstash',help="name of the "
-                                  "credstash file name to work with in the s3 bucket")
     parsers[action].set_defaults(action=action)
 
-    
+
     return parsers
 
 
