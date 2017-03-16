@@ -43,5 +43,5 @@ def listS3Credstashes(region, args, **session_params):
 	print("TODO: listS3Credstashes")
 
 @clean_fail
-def deleteS3Secret(args.credential, region=region, bucket=args.bucket, **session_params):
+def deleteS3Secret(region, bucket, **session_params):
 	print("TODO: deleteS3Secret")
