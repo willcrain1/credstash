@@ -47,36 +47,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.hmac import HMAC
 
-_hash_classes = {
-    'SHA': hashes.SHA1,
-    'SHA224': hashes.SHA224,
-    'SHA256': hashes.SHA256,
-    'SHA384': hashes.SHA384,
-    'SHA512': hashes.SHA512,
-    'RIPEMD': hashes.RIPEMD160,
-    'WHIRLPOOL': hashes.Whirlpool,
-    'MD5': hashes.MD5,
-}
-
-DEFAULT_DIGEST = 'SHA256'
-HASHING_ALGORITHMS = _hash_classes.keys()
-LEGACY_NONCE = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01'
-DEFAULT_REGION = "us-east-1"
-PAD_LEN = 19  # number of digits in sys.maxint
-WILDCARD_CHAR = "*"
-
-
-
-
-
-def printStdErr(s):
-    sys.stderr.write(str(s))
-    sys.stderr.write("\n")
-
-
-def fatal(s):
-    printStdErr(s)
-    sys.exit(1)
 
 
 class IntegrityError(Exception):

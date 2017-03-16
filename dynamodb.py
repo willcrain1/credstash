@@ -1,20 +1,54 @@
-from __future__ import print_function
 from utils import *
 
-def clean_fail(func):
-    '''
-    A decorator to cleanly exit on a failed call to AWS.
-    catch a `botocore.exceptions.ClientError` raised from an action.
-    This sort of error is raised if you are targeting a region that
-    isn't set up (see, `credstash setup`.
-    '''
-    def func_wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except botocore.exceptions.ClientError as e:
-            print(str(e), file=sys.stderr)
-            sys.exit(1)
-    return func_wrapper
+import argparse
+import codecs
+import csv
+import json
+import operator
+import os
+import os.path
+import sys
+import re
+import boto3
+import botocore.exceptions
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+try:
+    import yaml
+    NO_YAML = False
+except ImportError:
+    NO_YAML = True
+
+from base64 import b64encode, b64decode
+from boto3.dynamodb.conditions import Attr
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives.hmac import HMAC
+
+_hash_classes = {
+    'SHA': hashes.SHA1,
+    'SHA224': hashes.SHA224,
+    'SHA256': hashes.SHA256,
+    'SHA384': hashes.SHA384,
+    'SHA512': hashes.SHA512,
+    'RIPEMD': hashes.RIPEMD160,
+    'WHIRLPOOL': hashes.Whirlpool,
+    'MD5': hashes.MD5,
+}
+
+DEFAULT_DIGEST = 'SHA256'
+HASHING_ALGORITHMS = _hash_classes.keys()
+LEGACY_NONCE = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01'
+DEFAULT_REGION = "us-east-1"
+PAD_LEN = 19  # number of digits in sys.maxint
+WILDCARD_CHAR = "*"
+
 
 @clean_fail
 def deleteSecrets(name, region=None, table="credential-store",

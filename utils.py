@@ -14,3 +14,13 @@ def clean_fail(func):
             print(str(e), file=sys.stderr)
             sys.exit(1)
     return func_wrapper
+
+
+def printStdErr(s):
+    sys.stderr.write(str(s))
+    sys.stderr.write("\n")
+
+
+def fatal(s):
+    printStdErr(s)
+    sys.exit(1)
