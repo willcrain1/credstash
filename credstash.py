@@ -13,12 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import print_function
-from dynamodb import deleteSecrets
-from dynamodb import list_credentials
-from dynamodb import putSecretAction
-from dynamodb import getSecretAction
-from dynamodb import getAllAction
-from dynamodb import createDdbTable
+from dynamodb import *
 
 import argparse
 import codecs
