@@ -14,6 +14,8 @@
 # limitations under the License.
 
 from __future__ import print_function
+import boto3
+import botocore.exceptions
 
 def clean_fail(func):
     '''
