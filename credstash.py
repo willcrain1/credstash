@@ -362,7 +362,11 @@ def main():
 
     try:
         region = args.region
-        datastore = args.datastore
+        if args.bucket != ""
+          datastore = "s3"
+        elif args.table != ""
+          datastore = "dynamodb"
+        
         session = get_session(**session_params)
         session.resource('dynamodb', region_name=region)
     except botocore.exceptions.NoRegionError:
