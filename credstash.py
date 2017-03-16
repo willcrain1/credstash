@@ -16,6 +16,7 @@ from __future__ import print_function
 from dynamodb import *
 from kms import *
 from s3 import *
+from iam import *
 
 import argparse
 import codecs
@@ -108,17 +109,6 @@ def value_or_filename(string):
     return output
 
 
-
-def get_session(aws_access_key_id=None, aws_secret_access_key=None,
-                aws_session_token=None, profile_name=None):
-    if get_session._cached_session is None:
-        get_session._cached_session = boto3.Session(aws_access_key_id=aws_access_key_id,
-                                                    aws_secret_access_key=aws_secret_access_key,
-                                                    aws_session_token=aws_session_token,
-                                                    profile_name=profile_name)
-    return get_session._cached_session
-get_session._cached_session = None
-
 def open_aes_ctr_legacy(key_service, material):
     """
     Decrypts secrets stored by `seal_aes_ctr_legacy`.
@@ -200,25 +190,6 @@ def get_digest(digest):
         return _hash_classes[digest]()
     except KeyError:
         raise ValueError("Could not find " + digest + " in cryptography.hazmat.primitives.hashes")
-
-
-def get_session_params(profile, arn):
-    params = {}
-    if profile is None and arn:
-        params = get_assumerole_credentials(arn)
-    elif profile:
-        params = dict(profile_name=profile)
-    return params
-
-def get_assumerole_credentials(arn):
-    sts_client = boto3.client('sts')
-    # Use client object and pass the role ARN
-    assumedRoleObject = sts_client.assume_role(RoleArn=arn,
-                                               RoleSessionName="AssumeRoleCredstashSession1")
-    credentials = assumedRoleObject['Credentials']
-    return dict(aws_access_key_id=credentials['AccessKeyId'],
-                aws_secret_access_key=credentials['SecretAccessKey'],
-                aws_session_token=credentials['SessionToken'])
 
 
 def get_parser():
