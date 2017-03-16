@@ -39,9 +39,9 @@ def putS3SecretKey(args, region, **session_params)
 	print("TODO: putS3SecretKey method")
 
 @clean_fail
-listS3Credstashes(region, args, **session_params)
+def listS3Credstashes(region, args, **session_params)
 	print("TODO: listS3Credstashes")
 
 @clean fail
-deleteS3Secret(args.credential, region=region, bucket=args.bucket, **session_params)
+def deleteS3Secret(args.credential, region=region, bucket=args.bucket, **session_params)
 	print("TODO: deleteS3Secret")
