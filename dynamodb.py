@@ -1,3 +1,5 @@
+from utils import *
+
 @clean_fail
 def deleteSecrets(name, region=None, table="credential-store",
                   **kwargs):
@@ -167,3 +169,150 @@ def createDdbTable(region=None, table="credential-store", **kwargs):
 
     print("Table has been created. "
           "Go read the README about how to create your KMS key")
+
+
+def getHighestVersion(name, region=None, table="credential-store",
+                      **kwargs):
+    '''
+    Return the highest version of `name` in the table
+    '''
+    session = get_session(**kwargs)
+
+    dynamodb = session.resource('dynamodb', region_name=region)
+    secrets = dynamodb.Table(table)
+
+    response = secrets.query(Limit=1,
+                             ScanIndexForward=False,
+                             ConsistentRead=True,
+                             KeyConditionExpression=boto3.dynamodb.conditions.Key(
+                                 "name").eq(name),
+                             ProjectionExpression="version")
+
+    if response["Count"] == 0:
+        return 0
+    return response["Items"][0]["version"]
+
+
+
+
+
+def listSecrets(region=None, table="credential-store", **kwargs):
+    '''
+    do a full-table scan of the credential-store,
+    and return the names and versions of every credential
+    '''
+    session = get_session(**kwargs)
+
+    dynamodb = session.resource('dynamodb', region_name=region)
+    secrets = dynamodb.Table(table)
+
+    response = secrets.scan(ProjectionExpression="#N, version",
+                            ExpressionAttributeNames={"#N": "name"})
+    return response["Items"]
+
+
+def putSecret(name, secret, version="", kms_key="alias/credstash",
+              region=None, table="credential-store", context=None,
+              digest=DEFAULT_DIGEST, **kwargs):
+    '''
+    put a secret called `name` into the secret-store,
+    protected by the key kms_key
+    '''
+    if not context:
+        context = {}
+    session = get_session(**kwargs)
+    kms = session.client('kms', region_name=region)
+    key_service = KeyService(kms, kms_key, context)
+    sealed = seal_aes_ctr_legacy(
+        key_service,
+        secret,
+        digest_method=digest,
+    )
+
+    dynamodb = session.resource('dynamodb', region_name=region)
+    secrets = dynamodb.Table(table)
+
+    data = {
+        'name': name,
+        'version': paddedInt(version),
+    }
+    data.update(sealed)
+
+    return secrets.put_item(Item=data, ConditionExpression=Attr('name').not_exists())
+
+
+def getAllSecrets(version="", region=None, table="credential-store",
+                  context=None, credential=None, session=None, **kwargs):
+    '''
+    fetch and decrypt all secrets
+    '''
+    output = {}
+    if session is None:
+        session = get_session(**kwargs)
+    dynamodb = session.resource('dynamodb', region_name=region)
+    kms = session.client('kms', region_name=region)
+    secrets = listSecrets(region, table, **kwargs)
+
+    # Only return the secrets that match the pattern in `credential`
+    # This already works out of the box with the CLI get action,
+    # but that action doesn't support wildcards when using as library
+    if credential and WILDCARD_CHAR in credential:
+        names = set(expand_wildcard(credential,
+                                    [x["name"]
+                                     for x in secrets]))
+    else:
+        names = set(x["name"] for x in secrets)
+
+    for credential in names:
+        try:
+            output[credential] = getSecret(credential,
+                                           version,
+                                           region,
+                                           table,
+                                           context,
+                                           dynamodb,
+                                           kms,
+                                           **kwargs)
+        except:
+            pass
+    return output
+
+
+def getSecret(name, version="", region=None,
+              table="credential-store", context=None,
+              dynamodb=None, kms=None, **kwargs):
+    '''
+    fetch and decrypt the secret called `name`
+    '''
+    if not context:
+        context = {}
+
+    # Can we cache
+    if dynamodb is None or kms is None:
+        session = get_session(**kwargs)
+        if dynamodb is None:
+            dynamodb = session.resource('dynamodb', region_name=region)
+        if kms is None:
+            kms = session.client('kms', region_name=region)
+
+    secrets = dynamodb.Table(table)
+
+    if version == "":
+        # do a consistent fetch of the credential with the highest version
+        response = secrets.query(Limit=1,
+                                 ScanIndexForward=False,
+                                 ConsistentRead=True,
+                                 KeyConditionExpression=boto3.dynamodb.conditions.Key("name").eq(name))
+        if response["Count"] == 0:
+            raise ItemNotFound("Item {'name': '%s'} couldn't be found." % name)
+        material = response["Items"][0]
+    else:
+        response = secrets.get_item(Key={"name": name, "version": version})
+        if "Item" not in response:
+            raise ItemNotFound(
+                "Item {'name': '%s', 'version': '%s'} couldn't be found." % (name, version))
+        material = response["Item"]
+
+    key_service = KeyService(kms, None, context)
+
+    return open_aes_ctr_legacy(key_service, material)

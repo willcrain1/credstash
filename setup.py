@@ -11,8 +11,8 @@ setup(
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: Apache Software License',
     ],
-    scripts=['credstash.py','dynamodb.py'],
-    py_modules=['credstash','dynamodb'],
+    scripts=['credstash.py','dynamodb.py','utils.py'],
+    py_modules=['credstash','dynamodb','utils'],
     install_requires=[
         'cryptography>=1.5, <2.0',
         'boto3>=1.1.1',
