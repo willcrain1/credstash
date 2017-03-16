@@ -1,3 +1,4 @@
+from __future__ import print_function
 from utils import *
 
 def clean_fail(func):
