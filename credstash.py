@@ -81,14 +81,6 @@ def key_value_pair(string):
     return output
 
 
-def expand_wildcard(string, secrets):
-    prog = re.compile('^' + string.replace(WILDCARD_CHAR, '.*') + '$')
-    output = []
-    for secret in secrets:
-        if prog.search(secret) is not None:
-            output.append(secret)
-    return output
-
 
 def value_or_filename(string):
     # argparse running on old version of python (<2.7) will pass an empty
@@ -115,33 +107,6 @@ def value_or_filename(string):
     return output
 
 
-def csv_dump(dictionary):
-    csvfile = StringIO()
-    csvwriter = csv.writer(csvfile)
-    for key in dictionary:
-        csvwriter.writerow([key, dictionary[key]])
-    return csvfile.getvalue()
-
-
-def dotenv_dump(dictionary):
-    dotenv_buffer = StringIO()
-    for key in dictionary:
-        dotenv_buffer.write("%s=%s\n" % (key.upper(), dictionary[key]))
-    dotenv_buffer.seek(0)
-    return dotenv_buffer.read()
-
-
-def paddedInt(i):
-    '''
-    return a string that contains `i`, left-padded with 0's up to PAD_LEN digits
-    '''
-    i_str = str(i)
-    pad = PAD_LEN - len(i_str)
-    return (pad * "0") + i_str
-
-
-
-
 
 def get_session(aws_access_key_id=None, aws_secret_access_key=None,
                 aws_session_token=None, profile_name=None):
@@ -152,18 +117,6 @@ def get_session(aws_access_key_id=None, aws_secret_access_key=None,
                                                     profile_name=profile_name)
     return get_session._cached_session
 get_session._cached_session = None
-
-
-def get_assumerole_credentials(arn):
-    sts_client = boto3.client('sts')
-    # Use client object and pass the role ARN
-    assumedRoleObject = sts_client.assume_role(RoleArn=arn,
-                                               RoleSessionName="AssumeRoleCredstashSession1")
-    credentials = assumedRoleObject['Credentials']
-    return dict(aws_access_key_id=credentials['AccessKeyId'],
-                aws_secret_access_key=credentials['SecretAccessKey'],
-                aws_session_token=credentials['SessionToken'])
-
 
 def open_aes_ctr_legacy(key_service, material):
     """
@@ -255,6 +208,16 @@ def get_session_params(profile, arn):
     elif profile:
         params = dict(profile_name=profile)
     return params
+
+def get_assumerole_credentials(arn):
+    sts_client = boto3.client('sts')
+    # Use client object and pass the role ARN
+    assumedRoleObject = sts_client.assume_role(RoleArn=arn,
+                                               RoleSessionName="AssumeRoleCredstashSession1")
+    credentials = assumedRoleObject['Credentials']
+    return dict(aws_access_key_id=credentials['AccessKeyId'],
+                aws_secret_access_key=credentials['SecretAccessKey'],
+                aws_session_token=credentials['SessionToken'])
 
 
 def get_parser():
