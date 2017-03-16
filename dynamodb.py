@@ -1,6 +1,5 @@
 from utils import *
 
-import codecs
 import csv
 import json
 import operator
