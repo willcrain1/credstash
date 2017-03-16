@@ -23,7 +23,7 @@ import boto3
 import botocore.exceptions
 
 @clean_fail
-def createS3Credstash(region, bucket, **session_params, s3credstash):
+def createS3Credstash(region, bucket, s3credstash, **session_params):
 	print("TODO: createS3Datastore method")
 	print("region="+region
 		  "bucket="+bucket
