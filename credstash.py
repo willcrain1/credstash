@@ -15,6 +15,7 @@
 from __future__ import print_function
 from dynamodb import *
 from kms import *
+from s3 import *
 
 import argparse
 import codecs
@@ -383,7 +384,7 @@ def main():
                           table=args.table,
                           **session_params)
             elif datastore == "s3":
-                print("TODO: create delete function for s3 secrets")
+                deleteS3Secret(args.credential, region=region, bucket=args.bucket, **session_params)
             else:
                 print(datastore + " is not a supported datastore")
             return
@@ -391,7 +392,7 @@ def main():
             if datastore == "dynamodb":
                 list_credentials(region, args, **session_params)
             elif datastore == "s3":
-                print("TODO: create list function for s3 secrets")
+                listS3Credstashes(region, args, **session_params)
             else:
                 print(datastore + " is not a supported datastore")
             return
@@ -399,7 +400,7 @@ def main():
             if datastore == "dynamodb":
                 putSecretAction(args, region, **session_params)
             elif datastore == "s3":
-                print("TODO: create put function for s3 secrets")
+                putS3SecretKey(args, region, **session_params)
             else:
                 print(datastore + " is not a supported datastore")
             return
@@ -407,7 +408,7 @@ def main():
             if datastore == "dynamodb":
                 getSecretAction(args, region, **session_params)
             elif datastore == "s3":
-                print("TODO: create get function for s3 secrets")
+                getS3SecretKey(args, region, **session_params)
             else:
                 print(datastore + " is not a supported datastore")
             return
@@ -415,7 +416,7 @@ def main():
             if datastore == "dynamodb":
                 getAllAction(args, region, **session_params)
             elif datastore == "s3":
-                print("TODO: create getall function for s3 secrets")
+                getAllS3Secrets(args, region, **session_params)
             else:
                 print(datastore + " is not a supported datastore")
             return
@@ -424,7 +425,7 @@ def main():
                 createDdbTable(region=region, table=args.table,
                                 **session_params)
             elif datastore == "s3":
-                createS3Datastore(region=region, bucket=args.bucket,
+                createS3Credstash(region=region, bucket=args.bucket,
                                 **session_params)
             else:
                 print(datastore + " is not a supported datastore")
