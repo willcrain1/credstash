@@ -3,8 +3,6 @@ from utils import *
 import csv
 import json
 import operator
-import os
-import os.path
 import sys
 import re
 import boto3
