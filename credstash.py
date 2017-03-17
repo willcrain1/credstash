@@ -207,8 +207,9 @@ def get_parser():
                                   "`~/.aws/config`. As a last resort, "
                                   "it will use " + DEFAULT_REGION)
     datastore_parse = parsers['super'].add_mutually_exclusive_group()
-    datastore_parse.add_argument("-b", "--bucket", nargs=2,
-                                  help="the s3 bucket and the name of the "
+    datastore_parse.add_argument("-s", "--s3credstash", nargs=2,
+                                  help="Two positional arguments.  "
+                                  "1.  The s3 bucket name and 2. the name of the "
                                   "credstash file of which to interact with."
                                   "Note: only used with --datastore s3")
     datastore_parse.add_argument("-t", "--table", default="credential-store",
