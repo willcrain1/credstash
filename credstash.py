@@ -337,12 +337,12 @@ def main():
 
     try:
         region = args.region
-        if args.bucket != "":
+        if args.s3credstash != "":
           datastore = "s3"
         elif args.table != "":
           datastore = "dynamodb"
         else:
-          datastore = "select bucket to use s3 or table to use dynamodb"
+          datastore = "select s3credstash to use s3 or table to use dynamodb"
         
         session = get_session(**session_params)
         session.resource('dynamodb', region_name=region)
@@ -358,7 +358,7 @@ def main():
                           table=args.table,
                           **session_params)
             elif datastore == "s3":
-                deleteS3Secret(args.credential, region=region, bucket=args.bucket, **session_params)
+                deleteS3Secret(args.credential, region=region, s3credstash=args.s3credstash, **session_params)
             else:
                 print(datastore + " is not a supported datastore")
             return
