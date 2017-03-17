@@ -29,9 +29,11 @@ def createS3Credstash(region, s3credstash, **session_params):
 		  "s3credstash=",s3credstash,
 		  "session_params=",session_params
 		  )
-	credstash={'credstashid': s3credstash[1] }
-	print(credstash)
-
+	s3bucketname=s3credstash[0]
+	credstashname=s3credstash[1]
+	credstash={'credstashid': credstashname }
+	credstashjson=json.dumps(credstash)
+	print credstashjson
 
 @clean_fail
 def getAllS3Secrets(args, region, **session_params):
