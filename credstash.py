@@ -399,7 +399,7 @@ def main():
                 createDdbTable(region=region, table=args.table,
                                 **session_params)
             elif datastore == "s3":
-                createS3Credstash(region=region, bucket=args.bucket,
+                createS3Credstash(region=region, s3credstash=args.s3credstash,
                                 **session_params)
             else:
                 print(datastore + " is not a supported datastore")
