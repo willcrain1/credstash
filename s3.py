@@ -34,8 +34,7 @@ def createS3Credstash(region, s3credstash, **session_params):
 	credstashjson=json.dumps(credstash)
 	print(credstashjson)
 	s3 = boto3.resource('s3')
-	for bucket in s3.buckets.all():
-    	print(bucket.name)
+	s3.Object(s3bucketname, credstashname).put(Body=credstashjson)
 
 @clean_fail
 def getAllS3Secrets(args, region, **session_params):
