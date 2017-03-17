@@ -24,15 +24,10 @@ import botocore.exceptions
 
 @clean_fail
 def createS3Credstash(region, s3credstash, **session_params):
-	print("region=",region,
-		  "s3credstash=",s3credstash,
-		  "session_params=",session_params
-		  )
 	s3bucketname=s3credstash[0]
 	credstashname=s3credstash[1]
 	credstash={'credstashid': credstashname }
 	credstashjson=json.dumps(credstash)
-	print(credstashjson)
 	s3 = boto3.resource('s3')
 	s3.Object(s3bucketname, credstashname).put(Body=credstashjson)
 
